@@ -15,6 +15,8 @@ public class CameraController : MonoBehaviour {
 
 	private GameObject ghost = null;
 
+	private Vector2 startDrag = new Vector2(-9999, -9999);
+
 	void Start () {
 		zoomLevel = 5.0f;
 		this.gameObject.transform.position = new Vector3 (0, zoomLevel, 0);
@@ -55,29 +57,60 @@ public class CameraController : MonoBehaviour {
 		}
 		newPosition.y = zoomLevel;
 			
+		// Move the camera to the new position.
 		camera.transform.position = newPosition;
 
-		// Ghost object placement
 		Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
 		float distance;
 		if (RAYCAST_PLANE.Raycast(ray, out distance)) {
 			Vector3 point = ray.GetPoint(distance);
-			Vector3 flooredPoint = new Vector3 (Mathf.Round(point.x), 0, Mathf.Round(point.z));
+			int floorX = (int)Mathf.Round(point.x);
+			int floorZ = (int)Mathf.Round(point.z);
 
+			// Delete old ghost, if possible
 			if (ghost != null) {
 				Object.Destroy (ghost);
 			}
+
+			// Create new ghost object
 			ghost = (GameObject)Instantiate(Resources.Load("Prefabs/GhostCube"));
-			ghost.transform.position = flooredPoint;
+			ghost.transform.position = new Vector3 (floorX, 0, floorZ);
 
-			Debug.Log ("Raw point: " + point);
-			Debug.Log ("Floored point: " + flooredPoint);
-
-			// Actually create the object
-			if (Input.GetMouseButtonDown(0)) {
-				GameObject go = (GameObject)Instantiate(Resources.Load("Prefabs/ConveyorStraight"));
-				go.transform.position = flooredPoint;
+			// Create new floorplan controls
+			if (Input.GetMouseButtonDown (0)) {
+				startDrag = new Vector2 (floorX, floorZ);
 			}
+
+			if (Input.GetMouseButton (0)) {
+				if (startDrag.x != -9999 && startDrag.y != -9999) {
+					Vector2 currDrag = new Vector2 (floorX, floorZ);
+
+					int xScale = (int)(currDrag.x - startDrag.x);
+					int zScale = (int)(currDrag.y - startDrag.y);
+					ghost.transform.localScale = new Vector3 (
+						xScale + (xScale > 0 ? 1 : -1),
+						1,
+						zScale + (zScale > 0 ? 1 : -1));
+					ghost.transform.position = new Vector3 (floorX - (xScale * 0.5f), 0, floorZ - (zScale * 0.5f));
+				}
+			}
+
+			// Create/delete controls
+			/*
+			// Actually create the requested object
+			if (Input.GetMouseButton(0)) {
+				if (Tile.get(floorX, floorZ) == null) {
+					Tile.add (new TileConveyor(), floorX, floorZ);
+				}
+			}
+
+			// Delete the object (if present) on right click
+			if (Input.GetMouseButton (1)) {
+				if (Tile.get (floorX, floorZ) != null) {
+					Tile.remove (floorX, floorZ);
+				}
+			}
+			*/
 		}
 
 	}
