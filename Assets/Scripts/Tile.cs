@@ -87,7 +87,8 @@ public abstract class Tile {
 	 * Returns an integer representing which neighbors exist.
 	 * 
 	 * TODO: make a version of this method which checks if neighbors are
-	 * equal type or a subtype of this tile's type.
+	 * equal type or a subtype of this tile's type. I.e., check if != null 
+	 * and the tile at that point instanceof this type.
 	 */
 	public int getBitvector() {
 		int toReturn = 0;
@@ -103,7 +104,18 @@ public abstract class Tile {
 		if (get (x - 1, z) != null) { // West
 			toReturn += WEST;
 		}
-		// TODO: Add the other four directions
+		if (get (x + 1, z + 1) != null) { // NE
+			toReturn += NORTHEAST;
+		}
+		if (get (x + 1, z - 1) != null) { // SE
+			toReturn += SOUTHEAST;
+		}
+		if (get (x - 1, z + 1) != null) { // NW
+			toReturn += NORTHWEST;
+		}
+		if (get (x - 1, z - 1) != null) { // SW
+			toReturn += SOUTHWEST;
+		}
 		return toReturn;
 	}
 
@@ -114,7 +126,7 @@ public abstract class Tile {
 	public abstract GameObject getModel ();
 
 	/**
-	 * Update this tile's model based on its surroundings.
+	 * Update this tile's model based on its neighbors.
 	 */
 	public void updateModel() {
 		if (this.gameObject != null) {

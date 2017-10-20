@@ -8,6 +8,7 @@ public class TileConveyor : Tile {
 	// Then make conveyor extend that abstract class with params. for models
 
 	// Begin model variation definitions
+	// These are constants for which adjacencies we use which model.
 
 	protected int[] straight = { 
 		NONE, 
@@ -38,6 +39,7 @@ public class TileConveyor : Tile {
 	};
 
 	// Begin orientation definitions
+	// These are constants that represent how much to rotate each model based on adjacencies.
 
 	int[] rotate0 = { NONE, EAST, SOUTH + EAST, SOUTH + EAST + WEST, NORTH + SOUTH + EAST + WEST };
 	int[] rotate90 = { NORTH, SOUTH, NORTH + SOUTH, SOUTH + WEST, NORTH + SOUTH + WEST };

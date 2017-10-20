@@ -95,6 +95,30 @@ public class CameraController : MonoBehaviour {
 				}
 			}
 
+			if (Input.GetMouseButtonUp (0)) {
+				if (startDrag.x != -9999 && startDrag.y != -9999) {
+					Vector2 currDrag = new Vector2 (floorX, floorZ);
+
+					if (FloorPlan.add (startDrag.x, startDrag.y, currDrag.x - startDrag.x, currDrag.y - startDrag.y)) {
+						Object.Destroy (ghost);
+
+						GameObject newFloor = (GameObject)Instantiate (Resources.Load ("Prefabs/FloorCube"));
+
+						int xScale = (int)(currDrag.x - startDrag.x);
+						int zScale = (int)(currDrag.y - startDrag.y);
+						newFloor.transform.position = new Vector3 (floorX - (xScale * 0.5f), 0, floorZ - (zScale * 0.5f));
+						newFloor.transform.localScale = new Vector3 (
+							xScale + (xScale > 0 ? 1 : -1),
+							1,
+							zScale + (zScale > 0 ? 1 : -1));
+						
+						Material mat = new Material (Resources.Load<Material> ("Materials/Floor"));
+						mat.color = new Color (Random.Range (0, 1.0f), Random.Range (0, 1.0f), Random.Range (0, 1.0f), 0.5f);
+						newFloor.GetComponent<Renderer>().material = mat;
+					}
+				}
+			}
+
 			// Create/delete controls
 			/*
 			// Actually create the requested object
